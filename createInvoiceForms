@@ -1,0 +1,264 @@
+Imports System.Data
+Imports System.Data.SqlClient
+Imports System.Configuration
+Imports System.Console
+Imports System.Net.Mail
+Imports System.Net.Mime
+
+Partial Class CreateInvoiceForm
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
+        lblCustomerOrderNum.Text = Session("customerOrderID")
+        'lblInvoiceNumber.Text = Session("invoiceID")
+        lblInvoiceDate.Text = DateTime.Today
+        lblDeliveryOrderNum.Text = Session("deliveryOrderID")
+        lblPurchaseOrderNum.Text = Session("purchaseOrderID")
+        lblCustomerName.Text = Session("customerName")
+        lblAddress.Text = Session("address")
+        lblContactNumber.Text = Session("contactNumber")
+        lblEmail.Text = Session("email")
+        lblDeliveryCharge.Text = Session("deliveryCharge")
+
+        Dim connectionString6 = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim myConn6 As New SqlConnection(connectionString6)
+        Dim cmd6 = "Select Sum(((co.quantity*p.unitPrice)+d.deliveryCharge)*1.07) from CustomerOrderItem AS co INNER JOIN Product As p ON co.productName = p.productName INNER JOIN CustomerOrder AS c ON co.customerOrderID = c.customerOrderID INNER JOIN DeliveryOrder As d ON co.customerOrderID = d.customerOrderID  WHERE c.customerOrderID = '" & Session("customerOrderID") & "'"
+
+        Dim myCmd6 As New SqlCommand(cmd6, myConn6)
+        Dim objReader6 As SqlDataReader
+        myConn6.Open()
+        objReader6 = myCmd6.ExecuteReader()
+
+        If Not objReader6.Read() Then
+            txtTotal.Text = "No item selected"
+            objReader6.Close()
+            myConn6.Close()
+
+        Else
+
+            Dim totalAmount As Double = objReader6.GetValue(0).ToString - ".0000"
+            Session("totalAmount") = totalAmount
+            txtTotal.Text = "$" + Session("totalAmount").ToString
+
+        End If
+
+
+
+
+
+        Dim Connection = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim Connect As New SqlConnection(Connection)
+        Dim My = "SELECT c.purchaseOrderID, d.deliveryOrderID, i.invoiceDate, c.customerOrderID, cu.address, cu.contactNumber, cu.name AS Expr1, cu.email FROM CustomerOrder AS c INNER JOIN CustomerOrderItem AS co ON c.customerOrderID = co.customerOrderID INNER JOIN DeliveryOrder AS d ON c.customerOrderID = d.customerOrderID INNER JOIN Product AS p ON co.productName = p.productName INNER JOIN Customer AS cu ON c.customerID = cu.customerID INNER JOIN Invoice As i ON c.customerOrderID = i.customerOrderID WHERE c.customerOrderID = '" & Session("customerOrderID") & "'"
+        Dim Sq As New SqlCommand(My, Connect)
+        Connect.Open()
+        Dim Reader3 As SqlDataReader
+        Reader3 = Sq.ExecuteReader()
+        If Not Reader3.Read() Then
+
+
+            Connect.Close()
+        Else
+            lblCustomerName.Text = Reader3.GetValue(6)
+            lblPurchaseOrderNum.Text = Reader3.GetValue(0)
+            lblDeliveryOrderNum.Text = Reader3.GetValue(1)
+            lblCustomerOrderNum.Text = Reader3.GetValue(3)
+            lblInvoiceDate.Text = Reader3.GetValue(2)
+            lblAddress.Text = Reader3.GetValue(4)
+            lblContactNumber.Text = Reader3.GetValue(5)
+            lblEmail.Text = Reader3.GetValue(7)
+
+
+        End If
+        Page.DataBind()
+
+
+
+    End Sub
+
+
+
+    Protected Sub btnConfirm_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnConfirm.Click
+
+        'MsgBox("Invoice created", MsgBoxStyle.OkOnly)
+        'updateStatus()
+        createInvoice()
+        updateStatus()
+
+
+
+        'If (lblEmail.Text = getEmail()) Then
+
+        '    Dim email As String = getEmail()
+        '    Dim name As String = getName()
+        '    Dim po As String = getPONum()
+        '    ' Dim invoiceNum As String = getInvoiceNum()
+        '    Dim message As String = "Hello " & name & "," & vbNewLine & vbNewLine & ""
+        '    message += "This message is to notify you that the invoice for the following purchase order is created:" & vbNewLine & vbNewLine & ""
+        '    message += "Purchase Order: " & po & vbNewLine & ""
+        '    ' message += "Invoice Number: " & invoiceNum & vbNewLine & vbNewLine & ""
+        '    'message += "http://localhost:3815/Tmnt/homepage.aspx"
+
+
+        '    email = lblEmail.Text
+
+        '    sendMail("TerraFirma <admin@terrafirma.com>", email, "Invoice Created", message)
+
+        '    Response.Redirect("CreateInvoice.aspx")
+
+        'Else
+        'MsgBox("Failed to send. Please check that all fields are entered correctly", MsgBoxStyle.OkOnly, "Error")
+
+        'End If
+
+        Response.Redirect("InvoiceSummary.aspx")
+    End Sub
+
+
+    Protected Sub updateStatus()
+        Dim connectionString As String = _
+        ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "UPDATE CustomerOrder SET orderStatus = 'Ready' WHERE customerOrderID = '" & Session("customerOrderID") & "'"
+        Dim myCmd As SqlCommand = New SqlCommand(sql, connection)
+
+        myCmd.ExecuteNonQuery()
+        connection.Close()
+
+
+    End Sub
+
+
+
+
+    Protected Sub deleteInvoice()
+
+        Dim connectionString As String = _
+        ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "DELETE Invoice WHERE customerOrderID = '" & Session("customerOrderID") & "'"
+        Dim myCmd As SqlCommand = New SqlCommand(sql, connection)
+
+        myCmd.ExecuteNonQuery()
+        connection.Close()
+    End Sub
+
+
+    Protected Sub createInvoice()
+
+        Dim today As System.DateTime
+        Dim answer As System.DateTime
+
+        today = System.DateTime.Today
+        answer = today.AddDays(35)
+
+        Session("dueDate") = answer
+        lblDueDate.Text = Session("dueDate").ToString
+
+        lblDueStatus.Text = "Not Due"
+
+        Dim connectionString As String = _
+       ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "INSERT INTO Invoice values(@deliveryOrderID, @customerOrderID, @invoiceDate, @totalCost, @dueDate, @dueStatus) "
+        Dim myCmd As SqlCommand = New SqlCommand(sql, connection)
+
+        myCmd.Parameters.Add(New SqlParameter("@deliveryOrderID", lblDeliveryOrderNum.Text))
+        myCmd.Parameters.Add(New SqlParameter("@customerOrderID", lblCustomerOrderNum.Text))
+        myCmd.Parameters.Add(New SqlParameter("@invoiceDate", lblInvoiceDate.Text))
+        myCmd.Parameters.Add(New SqlParameter("@totalCost", txtTotal.Text))
+        myCmd.Parameters.Add(New SqlParameter("@dueDate", lblDueDate.Text))
+        myCmd.Parameters.Add(New SqlParameter("@dueStatus", lblDueStatus.Text))
+
+        myCmd.ExecuteNonQuery()
+        connection.Close()
+
+
+    End Sub
+
+
+
+    Protected Sub btnBack_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles btnBack.Click
+        Response.Redirect("CreateInvoice.aspx")
+    End Sub
+
+
+    Function getEmail() As String
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "Select email from Customer where email = '" & lblEmail.Text & "'"
+        Dim command As SqlCommand = New SqlCommand(sql, connection)
+        Dim reader As SqlDataReader = command.ExecuteReader()
+        Dim post As String = ""
+        If (reader.Read()) Then
+            post = reader.GetValue(0)
+        End If
+        connection.Close()
+        Return post
+    End Function
+
+    Function getPONum() As String
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "Select purchaseOrderID from CustomerOrder where customerOrderID = '" & lblCustomerOrderNum.Text & "'"
+        Dim command As SqlCommand = New SqlCommand(sql, connection)
+        Dim reader As SqlDataReader = command.ExecuteReader()
+        Dim post As String = ""
+        If (reader.Read()) Then
+            post = reader.GetValue(0)
+        End If
+        connection.Close()
+        Return post
+    End Function
+
+    Function getInvoiceNum() As String
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "Select invoiceID from CustomerOrder where customerOrderID = '" & lblCustomerOrderNum.Text & "'"
+        Dim command As SqlCommand = New SqlCommand(sql, connection)
+        Dim reader As SqlDataReader = command.ExecuteReader()
+        Dim post As String = ""
+        If (reader.Read()) Then
+            post = reader.GetValue(0)
+        End If
+        connection.Close()
+        Return post
+    End Function
+
+    Function getName() As String
+        Dim connectionString As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "Select name from Customer where email = '" & lblEmail.Text & "'"
+        Dim command As SqlCommand = New SqlCommand(sql, connection)
+        Dim reader As SqlDataReader = command.ExecuteReader()
+        Dim post As String = ""
+        If (reader.Read()) Then
+            post = reader.GetValue(0)
+        End If
+        connection.Close()
+        Return post
+    End Function
+
+    Protected Sub sendMail(ByVal sendFrom As String, ByVal sendTo As String, _
+        ByVal Subject As String, ByVal message As String)
+
+        Dim dd As SmtpClient = New SmtpClient("smtp.live.com", 25)
+        dd.EnableSsl = True
+        dd.Host = "smtp.live.com"
+        dd.Credentials = New System.Net.NetworkCredential("silly_galgal@hotmail.com", "")
+        dd.Send(sendFrom, sendTo, Subject, message)
+        'MsgBox("Mail Sent!", MsgBoxStyle.OkOnly, "Sent")
+
+        MsgBox("Invoice created", MsgBoxStyle.OkOnly)
+
+
+    End Sub
+
+End Class
