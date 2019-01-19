@@ -1,0 +1,171 @@
+Imports System.Data
+Imports System.Data.SqlClient
+Imports System.Configuration
+Imports System.Random
+Imports Exventure
+Imports DlCustomerOrder
+
+Partial Class CreatePurchaseOrder
+    Inherits System.Web.UI.Page
+
+    Private Sub BindPOId(ByVal supplierID As Integer)
+        Dim dlExventure As New BlPurchaseOrderWs
+
+
+        DropDownList1.DataSource = dlExventure.GetPurchaseOrderID(supplierID)
+        DropDownList1.DataTextField = "orderID"
+        DropDownList1.DataValueField = "orderID"
+        DropDownList1.DataBind()
+
+
+
+    End Sub
+
+    Private Sub BindGridViewPurchaseOrder(ByVal orderID As Integer)
+        Dim dlExventure As New DlExventure
+       
+
+        GridViewPurchaseOrder.DataSource = dlExventure.GetPurchaseOrder(orderID)
+        GridViewPurchaseOrder.DataBind()
+
+
+    End Sub
+
+    Private Sub BindGridViewPurchaseOrderDetails(ByVal orderID As Integer)
+        Dim dlExventure As New DlExventure
+
+
+        GridViewPurchaseOrderDetails.DataSource = dlExventure.GetPurchaseOrderDetails(orderID)
+        GridViewPurchaseOrderDetails.DataBind()
+        
+
+
+    End Sub
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        If IsPostBack = False Then
+            Dim orderID As Integer
+            Dim supplierID As Integer
+            BindGridViewPurchaseOrder(orderID)
+            BindPOId(supplierID)
+
+         
+
+        End If
+    End Sub
+
+    Protected Sub ButtonGetDetails_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles ButtonGetDetails.Click
+        Label3.Visible = True
+        Label4.Visible = True
+        Dim orderID As Integer
+
+        'orderID = Convert.ToInt16(TextBoxPurchaseOrderID.Text)
+        orderID = DropDownList1.SelectedValue
+        BindGridViewPurchaseOrderDetails(orderID)
+        BindGridViewPurchaseOrder(orderID)
+
+    End Sub
+
+
+    Protected Sub Button3_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button3.Click
+        Dim customer As New DlCustomerOrder
+        Dim checking As String
+        Dim purchaseOrderID As Integer
+        purchaseOrderID = DropDownList1.SelectedValue
+        checking = customer.checkExistingCustomerOrder(purchaseOrderID)
+
+        If (checking = False) Then
+            For i = 0 To GridViewPurchaseOrder.Rows.Count - 1
+                Dim orderID As Integer = Convert.ToInt32(GridViewPurchaseOrder.Rows(i).Cells(0).Text)
+                Dim orderDate As String = GridViewPurchaseOrder.Rows(i).Cells(2).Text
+                Dim totalCost As String = GridViewPurchaseOrder.Rows(i).Cells(3).Text
+
+                Session("orderID") = orderID
+                Session("orderDate") = orderDate
+                Session("totalCost") = totalCost
+
+                SqlDataSource1.Insert()
+            Next
+
+            Dim connectionString4 As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+            Dim connection4 As SqlConnection = New SqlConnection(connectionString4)
+            Dim sql4 As String = "SELECT MAX(customerOrderID) FROM CustomerOrder"
+            Dim myCmd4 As SqlCommand = New SqlCommand(sql4, connection4)
+
+
+            Dim objReader4 As SqlDataReader
+            connection4.Open()
+            objReader4 = myCmd4.ExecuteReader()
+
+            If Not objReader4.Read() Then
+
+                connection4.Close()
+
+            Else
+                Session("MAXcustomerOrderID") = objReader4.GetValue(0)
+
+            End If
+
+            For i = 0 To GridViewPurchaseOrderDetails.Rows.Count - 1
+                Dim orderID As Integer = Convert.ToInt32(GridViewPurchaseOrderDetails.Rows(i).Cells(0).Text)
+                Dim productName As String = GridViewPurchaseOrderDetails.Rows(i).Cells(1).Text
+                Dim unitPrice As String = GridViewPurchaseOrderDetails.Rows(i).Cells(2).Text
+                Dim quantity As String = GridViewPurchaseOrderDetails.Rows(i).Cells(3).Text
+
+                Session("orderID") = orderID
+                Session("name") = productName
+                Session("price") = unitPrice
+                Session("quantity") = quantity
+
+
+
+                SqlDataSource2.Insert()
+            Next
+
+            Dim Alert = MsgBox("customer order created ", 0, "success")
+        Else
+
+
+
+            For i = 0 To GridViewPurchaseOrder.Rows.Count - 1
+
+                Dim orderID As Integer = Convert.ToInt32(GridViewPurchaseOrder.Rows(i).Cells(0).Text)
+                Dim totalCost As String = GridViewPurchaseOrder.Rows(i).Cells(3).Text
+                Session("purchaseOrderID1") = orderID
+                Session("totalCost1") = totalCost
+
+                SqlDataSource1.Update()
+            Next
+
+            For i = 0 To GridViewPurchaseOrderDetails.Rows.Count - 1
+
+                Dim orderID As Integer = Convert.ToInt32(GridViewPurchaseOrderDetails.Rows(i).Cells(0).Text)
+                Dim productName As String = GridViewPurchaseOrderDetails.Rows(i).Cells(1).Text
+                Dim unitPrice As String = GridViewPurchaseOrderDetails.Rows(i).Cells(2).Text
+                Dim quantity As String = GridViewPurchaseOrderDetails.Rows(i).Cells(3).Text
+
+
+                Session("purchaseOrderID1") = orderID
+                Session("name1") = productName
+                Session("price1") = unitPrice
+                Session("quantity1") = quantity
+
+
+
+                SqlDataSource2.Update()
+            Next
+
+            Dim alert = MsgBox("The above customer order already exist and will not be added.", 0, "Unsucess")
+
+        End If
+
+
+
+
+
+
+
+    End Sub
+
+
+End Class
