@@ -1,0 +1,157 @@
+
+Imports System.Data
+Imports System.Data.SqlClient
+Imports System.Configuration
+Partial Class UpdateDeleteRetrieve
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Label13.Text = DropDownListCustomerID.SelectedValue
+        Session("purchaseOrderID") = DropDownListPurchaseOrderID.SelectedValue
+
+        If (Label13.Text = "") Then
+            Label13.Text = "nothing"
+
+        Else
+            Dim connectionString6 = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+            Dim myConn6 As New SqlConnection(connectionString6)
+            Dim cmd6 = "Select Sum(quantity*unitPrice*1.07) from CustomerOrderItem WHERE purchaseOrderID = @purchaseOrderID "
+
+            Dim myCmd6 As New SqlCommand(cmd6, myConn6)
+            myCmd6.Parameters.Add(New SqlParameter("@purchaseOrderID", DropDownListPurchaseOrderID.SelectedValue))
+            Dim objReader6 As SqlDataReader
+            myConn6.Open()
+            objReader6 = myCmd6.ExecuteReader()
+
+            If Not objReader6.Read() Then
+                objReader6.Close()
+                myConn6.Close()
+
+            Else
+
+                Dim totalAmount = objReader6.GetValue(0)
+                Session("totalAmount") = totalAmount
+                Label13.Text = Session("totalAmount")
+                Label14.Text = Session("purchaseOrderID")
+
+            End If
+
+
+
+
+            Dim connectionString As String = _
+               ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+            Dim connection As SqlConnection = New SqlConnection(connectionString)
+            connection.Open()
+            Dim sql As String = " UPDATE CustomerOrder SET totalCost = '" & Session("totalAmount") & "' WHERE purchaseOrderID = '" & Session("purchaseOrderID") & "' "
+            Dim myCmd As SqlCommand = New SqlCommand(sql, connection)
+
+            myCmd.ExecuteNonQuery()
+            connection.Close()
+
+
+        End If
+
+
+    End Sub
+
+    Protected Sub GridView1_RowUpdated(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewUpdatedEventArgs) Handles GridView1.RowUpdated
+        GridView1.DataBind()
+    End Sub
+
+    Protected Sub GridView2_RowUpdated(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.GridViewUpdatedEventArgs) Handles GridView2.RowUpdated
+        GridView2.DataBind()
+        GridView1.DataBind()
+    End Sub
+
+    'Protected Sub SqlDataSourceCustomerOrder_Updated(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.SqlDataSourceStatusEventArgs) Handles SqlDataSourceCustomerOrder.Updated
+    '    GridView1.DataBind()
+    'End Sub
+
+    'Protected Sub SqlDataSourceCustomerOrderItem_Updated(ByVal sender As Object, ByVal e As System.Web.UI.WebControls.SqlDataSourceStatusEventArgs) Handles SqlDataSourceCustomerOrderItem.Updated
+    '    GridView2.DataBind()
+    'End Sub
+
+    Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
+        GridView1.Visible = True
+
+        Dim connectionString3 As String = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection3 As SqlConnection = New SqlConnection(connectionString3)
+        Dim sql3 As String = "SELECT orderStatus FROM CustomerOrder WHERE purchaseOrderID = '" & Session("purchaseOrderID") & " '"
+        Dim myCmd3 As SqlCommand = New SqlCommand(sql3, connection3)
+
+
+        Dim objReader3 As SqlDataReader
+        connection3.Open()
+        objReader3 = myCmd3.ExecuteReader()
+
+        If Not objReader3.Read() Then
+
+            connection3.Close()
+
+        Else
+            Session("orderStatus1") = objReader3.GetValue(0)
+
+        End If
+
+
+        Label15.Text = Session("orderStatus1")
+
+        If (Session("orderStatus1") = "NOT READY") Then
+            GridView2.Visible = True
+            Label12.Visible = True
+            GridView3.Visible = False
+            GridView1.Visible = True
+            GridView4.Visible = False
+            ' Dim alert = MsgBox("sorry, your order has already been processed", 0, "Unsuccess")
+        Else
+            GridView2.Visible = False
+            GridView3.Visible = True
+            GridView1.Visible = False
+            GridView4.Visible = True
+
+
+
+
+        End If
+    End Sub
+
+    Protected Sub Button2_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+
+        Dim connectionString1 As String = _
+                 ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection1 As SqlConnection = New SqlConnection(connectionString1)
+        connection1.Open()
+        Dim sql1 As String = "DELETE FROM CustomerOrder where purchaseOrderID = '" & Session("purchaseOrderID") & " ' "
+        Dim myCmd1 As SqlCommand = New SqlCommand(sql1, connection1)
+
+        myCmd1.ExecuteNonQuery()
+        connection1.Close()
+
+        Label11.Visible = False
+        Label12.Visible = False
+        DropDownListPurchaseOrderID.DataBind()
+        GridView1.DataBind()
+
+
+        Dim connectionString As String = _
+                 ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim connection As SqlConnection = New SqlConnection(connectionString)
+        connection.Open()
+        Dim sql As String = "DELETE FROM CustomerOrderItem where purchaseOrderID = '" & Session("purchaseOrderID") & " ' "
+        Dim myCmd As SqlCommand = New SqlCommand(sql, connection)
+
+        myCmd.ExecuteNonQuery()
+        connection.Close()
+        GridView2.DataBind()
+        Dim alert = MsgBox("Order has been deleted.", 0, "Success")
+
+        GridView1.Visible = False
+        GridView2.Visible = False
+        GridView3.Visible = False
+        GridView4.Visible = False
+
+
+
+    End Sub
+End Class
