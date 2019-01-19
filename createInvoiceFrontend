@@ -1,0 +1,155 @@
+<%@ Page Title="" Language="VB" MasterPageFile="~/MasterPage.master" AutoEventWireup="false" CodeFile="CreateInvoice.aspx.vb" Inherits="CreateInvoice" %>
+
+<asp:Content ID="Content1" ContentPlaceHolderID="head" Runat="Server">
+    <style type="text/css">
+        .style5
+        {
+            height: 307px;
+        }
+    </style>
+</asp:Content>
+<asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" Runat="Server">
+    <table style="width:100%;">
+        <tr>
+            <td>
+                <asp:DropDownList ID="DropDownList2" runat="server" AutoPostBack="True" 
+                    DataSourceID="SqlDataSource3" DataTextField="name" DataValueField="customerID">
+                </asp:DropDownList>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <asp:Label ID="Label1" runat="server" Text="Customer Order No. :"></asp:Label>
+                <asp:DropDownList ID="DropDownList1" runat="server" 
+                    DataSourceID="SqlDataSource1" DataTextField="customerOrderID" 
+                    DataValueField="customerOrderID" AutoPostBack="True">
+                </asp:DropDownList>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;</td>
+        </tr>
+        <tr>
+            <td class="style5">
+                <asp:DetailsView ID="DetailsView1" runat="server" Height="50px" Width="413px" 
+                    AutoGenerateRows="False" 
+                    DataSourceID="SqlDataSource2" style="margin-right: 100px" 
+                    AllowPaging="True">
+                    <Fields>
+                        <asp:BoundField DataField="customerOrderID" HeaderText="customerOrderID" 
+                            InsertVisible="False" ReadOnly="True" SortExpression="customerOrderID" />
+                        <asp:BoundField DataField="purchaseOrderID" HeaderText="purchaseOrderID" 
+                            SortExpression="purchaseOrderID" />
+                        <asp:BoundField DataField="customerID" HeaderText="customerID" 
+                            SortExpression="customerID" />
+                        <asp:BoundField DataField="orderDate" HeaderText="orderDate" 
+                            SortExpression="orderDate" />
+                        <asp:BoundField DataField="totalCost" HeaderText="totalCost" 
+                            SortExpression="totalCost" />
+                        <asp:BoundField DataField="productName" HeaderText="productName" 
+                            SortExpression="productName" />
+                        <asp:BoundField DataField="quantity" HeaderText="quantity" 
+                            SortExpression="quantity" >
+                        </asp:BoundField>
+                        <asp:BoundField DataField="deliveryOrderID" HeaderText="deliveryOrderID" 
+                            SortExpression="deliveryOrderID" InsertVisible="False" ReadOnly="True" >
+                        </asp:BoundField>
+<asp:BoundField DataField="deliveryCharge" HeaderText="deliveryCharge" SortExpression="deliveryCharge"></asp:BoundField>
+                        <asp:BoundField DataField="unitPrice" HeaderText="unitPrice" 
+                            SortExpression="unitPrice" >
+                        </asp:BoundField>
+                        <asp:BoundField DataField="productID" HeaderText="productID" 
+                            SortExpression="productID" InsertVisible="False" ReadOnly="True" >
+                        </asp:BoundField>
+                        <asp:BoundField DataField="Expr1" HeaderText="Expr1" 
+                            SortExpression="Expr1" >
+                        </asp:BoundField>
+                        <asp:BoundField DataField="address" HeaderText="address" 
+                            SortExpression="address" >
+                        </asp:BoundField>
+                        <asp:BoundField DataField="contactNumber" HeaderText="contactNumber" 
+                            SortExpression="contactNumber" />
+                        <asp:BoundField DataField="email" HeaderText="email" SortExpression="email" />
+                    </Fields>
+                </asp:DetailsView>
+                <asp:Label ID="lblCustomerOrderID" runat="server" Visible="False"></asp:Label>
+                <asp:Label ID="lblDeliveryOrderID" runat="server" Visible="False"></asp:Label>
+                <asp:Label ID="lblPurchaseOrderID" runat="server" Visible="False"></asp:Label>
+                <br />
+                <asp:Label ID="lblCustomerName" runat="server" Visible="False"></asp:Label>
+                <asp:Label ID="lblAddress" runat="server" Visible="False"></asp:Label>
+                <asp:Label ID="lblContact" runat="server" Visible="False"></asp:Label>
+                <asp:Label ID="lblEmail" runat="server" Visible="False"></asp:Label>
+                <asp:Label ID="lblDeliveryCharge" runat="server" Visible="False"></asp:Label>
+                <br />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <asp:Button ID="Button1" runat="server" Text="Create Invoice" />
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                <asp:SqlDataSource ID="SqlDataSource1" runat="server" 
+                    ConnectionString="<%$ ConnectionStrings:ConnectionString %>" 
+                    
+                    
+                    
+                    SelectCommand="SELECT customerOrderID FROM CustomerOrder WHERE (customerID = @customerID) AND (orderStatus = @orderStatus)">
+                    <SelectParameters>
+                        <asp:ControlParameter ControlID="DropDownList2" Name="customerID" 
+                            PropertyName="SelectedValue" Type="Int32" DefaultValue="" />
+                        <asp:Parameter DefaultValue="In Process" Name="orderStatus" />
+                    </SelectParameters>
+                </asp:SqlDataSource>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <asp:SqlDataSource ID="SqlDataSource2" runat="server" 
+                    ConnectionString="<%$ ConnectionStrings:ConnectionString %>" 
+                    
+                    
+                    
+                    
+                    
+                    
+                    SelectCommand="SELECT c.customerOrderID, c.purchaseOrderID, c.customerID, c.orderDate, c.totalCost, co.productName, co.quantity, d.deliveryOrderID, d.deliveryCharge, p.unitPrice, p.productID, cu.name AS Expr1, cu.address, cu.contactNumber, cu.email FROM CustomerOrder AS c INNER JOIN CustomerOrderItem AS co ON c.customerOrderID = co.customerOrderID INNER JOIN DeliveryOrder AS d ON c.customerOrderID = d.customerOrderID INNER JOIN Product AS p ON co.productName = p.productName INNER JOIN Customer AS cu ON c.customerID = cu.customerID WHERE (c.customerID = @customerID) AND (c.customerOrderID = @customerOrderID)">
+                    <SelectParameters>
+                        <asp:ControlParameter ControlID="DropDownList1" Name="customerOrderID" 
+                            PropertyName="SelectedValue" Type="Int32" />
+                        <asp:ControlParameter ControlID="DropDownList2" Name="customerID" 
+                            PropertyName="SelectedValue" Type="Int32" />
+                    </SelectParameters>
+                </asp:SqlDataSource>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <asp:SqlDataSource ID="SqlDataSource3" runat="server" 
+                    ConnectionString="<%$ ConnectionStrings:ConnectionString %>" 
+                    SelectCommand="SELECT [customerID], [name] FROM [Customer]">
+                </asp:SqlDataSource>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;</td>
+        </tr>
+        <tr>
+            <td>
+                &nbsp;</td>
+        </tr>
+    </table>
+</asp:Content>
+
