@@ -1,0 +1,81 @@
+Imports System.Data
+Imports System.Data.SqlClient
+Imports System.Configuration
+Imports System.Console
+Imports System.Runtime.InteropServices
+Imports System.Security.Cryptography
+Imports System.IO
+Imports System.Text
+
+Partial Class DeliveryOrderSummary
+    Inherits System.Web.UI.Page
+
+    Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        Fromcustname.Text = Session("name")
+        Fromcustaddress.Text = Session("address")
+        Fromcustcontactnumber.Text = Session("Contact")
+        Fromcustemail.Text = Session("Email")
+        datecreated.Text = Session("Date")
+        Customerorderno.Text = Session("id")
+        lbltotal.Text = Session("total")
+
+        Dim Connection = ConfigurationManager.ConnectionStrings("ConnectionString").ConnectionString
+        Dim Connect As New SqlConnection(Connection)
+        Dim My = "SELECT deliveryOrderID,deliveryAddress,emailTo,CustomerNameTo,deliveryDate,deliveryTime,contactNumberTo,dateCreate,deliveryCharge,totalPrice From DeliveryOrder WHERE CustomerOrderID = '" & Session("id") & "'"
+        Dim Sq As New SqlCommand(My, Connect)
+        Connect.Open()
+        Dim Reader3 As SqlDataReader
+        Reader3 = Sq.ExecuteReader()
+        If Not Reader3.Read() Then
+
+
+            Connect.Close()
+        Else
+            DeliveryOrdernumber.Text = Reader3.GetValue(0)
+            Toaddress.Text = Reader3.GetValue(1)
+            ToEmail.Text = Reader3.GetValue(2)
+            Tocustname.Text = Reader3.GetValue(3)
+            deliverydate.Text = Reader3.GetValue(4)
+            deliverytime.Text = Reader3.GetValue(5)
+            ToContactNumber.Text = Reader3.GetValue(6)
+            datecreate.Text = Reader3.GetValue(7)
+            Deliverycharge.Text = Reader3.GetValue(8)
+            lbltotalprice.Text = Reader3.GetValue(9)
+
+
+
+
+
+
+
+        End If
+        Page.DataBind()
+
+    End Sub
+
+   
+
+   
+    
+    Protected Sub Button1_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button1.Click
+        Try
+            Dim streetaddr As String = ""
+            Dim cityaddr As String = ""
+            Dim stateaddr As String = ""
+            Dim zipaddr As String = ""
+            Dim AddrToSearch As New StringBuilder()
+            AddrToSearch.Append("http://maps.google.com/maps?q=")
+
+           
+
+        Catch ex As Exception
+
+            MsgBox(ex.Message.ToString(), "Problem encountered while retrieving google map")
+
+        End Try
+    End Sub
+
+    Protected Sub Button2_Click(ByVal sender As Object, ByVal e As System.EventArgs) Handles Button2.Click
+        Response.Redirect("CreateDeliveryOrder.aspx")
+    End Sub
+End Class
