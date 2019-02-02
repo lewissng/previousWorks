@@ -1,0 +1,223 @@
+/**
+ * 
+ */
+package pagecode;
+
+import com.ibm.faces.component.html.HtmlScriptCollector;
+import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlForm;
+import com.ibm.faces.component.html.HtmlRequestLink;
+import com.ibm.faces.component.html.HtmlGraphicImageEx;
+import com.ibm.faces.component.html.HtmlCommandExButton;
+import com.ibm.jsf.web.data.MemberData;
+import com.ibm.jsf.web.data.ProductData;
+
+import javax.faces.component.html.HtmlInputText;
+import javax.faces.event.ValueChangeEvent;
+
+/**
+ * @author 083253T
+ *
+ */
+public class BiddingPage extends PageCodeBase {
+
+	protected HtmlScriptCollector scriptCollector2;
+	protected HtmlScriptCollector scriptCollector1;
+	protected HtmlForm form123;
+	protected HtmlRequestLink link123;
+	protected HtmlOutputText text123;
+	protected HtmlGraphicImageEx imageEx1;
+	protected HtmlOutputText textProductName1;
+	protected HtmlOutputText textMemberName1;
+	protected HtmlOutputText textStartDate1;
+	protected HtmlOutputText textEndDate1;
+	protected HtmlOutputText textDescription1;
+	protected HtmlOutputText textCurrentBid1;
+	protected HtmlOutputText textShippingHandlingCost1;
+	protected HtmlForm form1;
+	protected HtmlCommandExButton button1;
+	protected HtmlInputText textNewBid1;
+	protected ProductData productData;
+	protected HtmlOutputText textErrorMessage1;
+	protected MemberData memberData;
+	protected HtmlScriptCollector getScriptCollector2() {
+		if (scriptCollector2 == null) {
+			scriptCollector2 = (HtmlScriptCollector) findComponentInRoot("scriptCollector2");
+		}
+		return scriptCollector2;
+	}
+
+	protected HtmlScriptCollector getScriptCollector1() {
+		if (scriptCollector1 == null) {
+			scriptCollector1 = (HtmlScriptCollector) findComponentInRoot("scriptCollector1");
+		}
+		return scriptCollector1;
+	}
+
+	protected HtmlForm getForm123() {
+		if (form123 == null) {
+			form123 = (HtmlForm) findComponentInRoot("form123");
+		}
+		return form123;
+	}
+
+	
+	/** 
+	 * @managed-bean true
+	 */
+	protected MemberData getMemberData() {
+		if (memberData == null) {
+			memberData = (MemberData) getFacesContext().getApplication()
+					.createValueBinding("#{memberData}").getValue(
+							getFacesContext());
+		}
+		return memberData;
+	}
+
+	/** 
+	 * @managed-bean true
+	 */
+	protected void setMemberData(MemberData memberData) {
+		this.memberData = memberData;
+	}
+	
+	
+	
+	/** 
+	 * @managed-bean true
+	 */
+	protected ProductData getProductData() {
+		if (productData == null) {
+			productData = (ProductData) getFacesContext().getApplication()
+					.createValueBinding("#{productData}").getValue(
+							getFacesContext());
+		}
+		return productData;
+	}
+
+
+	/** 
+	 * @managed-bean true
+	 */
+	protected void setProductData(ProductData productData) {
+		this.productData = productData;
+	}
+	
+	
+	protected HtmlRequestLink getLink123() {
+		if (link123 == null) {
+			link123 = (HtmlRequestLink) findComponentInRoot("link123");
+		}
+		return link123;
+	}
+
+	protected HtmlOutputText getText123() {
+		if (text123 == null) {
+			text123 = (HtmlOutputText) findComponentInRoot("text123");
+		}
+		return text123;
+	}
+
+	protected HtmlGraphicImageEx getImageEx1() {
+		if (imageEx1 == null) {
+			imageEx1 = (HtmlGraphicImageEx) findComponentInRoot("imageEx1");
+		}
+		return imageEx1;
+	}
+
+	protected HtmlOutputText getTextProductName1() {
+		if (textProductName1 == null) {
+			textProductName1 = (HtmlOutputText) findComponentInRoot("textProductName1");
+		}
+		return textProductName1;
+	}
+
+	protected HtmlOutputText getTextMemberName1() {
+		if (textMemberName1 == null) {
+			textMemberName1 = (HtmlOutputText) findComponentInRoot("textMemberName1");
+		}
+		return textMemberName1;
+	}
+
+	protected HtmlOutputText getTextStartDate1() {
+		if (textStartDate1 == null) {
+			textStartDate1 = (HtmlOutputText) findComponentInRoot("textStartDate1");
+		}
+		return textStartDate1;
+	}
+
+	protected HtmlOutputText getTextEndDate1() {
+		if (textEndDate1 == null) {
+			textEndDate1 = (HtmlOutputText) findComponentInRoot("textEndDate1");
+		}
+		return textEndDate1;
+	}
+
+	protected HtmlOutputText getTextDescription1() {
+		if (textDescription1 == null) {
+			textDescription1 = (HtmlOutputText) findComponentInRoot("textDescription1");
+		}
+		return textDescription1;
+	}
+
+	protected HtmlOutputText getTextCurrentBid1() {
+		if (textCurrentBid1 == null) {
+			textCurrentBid1 = (HtmlOutputText) findComponentInRoot("textCurrentBid1");
+		}
+		return textCurrentBid1;
+	}
+
+	protected HtmlOutputText getTextShippingHandlingCost1() {
+		if (textShippingHandlingCost1 == null) {
+			textShippingHandlingCost1 = (HtmlOutputText) findComponentInRoot("textShippingHandlingCost1");
+		}
+		return textShippingHandlingCost1;
+	}
+
+	protected HtmlForm getForm1() {
+		if (form1 == null) {
+			form1 = (HtmlForm) findComponentInRoot("form1");
+		}
+		return form1;
+	}
+
+	protected HtmlCommandExButton getButton1() {
+		if (button1 == null) {
+			button1 = (HtmlCommandExButton) findComponentInRoot("button1");
+		}
+		return button1;
+	}
+
+	protected HtmlInputText getTextNewBid1() {
+		if (textNewBid1 == null) {
+			textNewBid1 = (HtmlInputText) findComponentInRoot("textNewBid1");
+		}
+		return textNewBid1;
+	}
+
+	protected HtmlOutputText getTextErrorMessage1() {
+		if (textErrorMessage1 == null) {
+			textErrorMessage1 = (HtmlOutputText) findComponentInRoot("textErrorMessage1");
+		}
+		return textErrorMessage1;
+	}
+
+	public String doButton1Action() {
+		log("Add new product"); 
+		String result = (new com.ibm.jsf.web.actions.UpdateBidAction()).execute(getProductData(), getMemberData());
+		
+		if ( result.equals("success") ) {
+		//log("Remove pData");
+		return "success";  
+		}
+		else{
+		log("Error: "+result); 
+		getRequestScope().put("errorMessage", result); 
+		return "error"; 
+		
+	}
+		//return "";
+	}
+
+
+}
