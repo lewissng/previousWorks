@@ -1,0 +1,121 @@
+/**
+ * 
+ */
+package pagecode;
+
+import com.ibm.faces.component.html.HtmlScriptCollector;
+import javax.faces.component.html.HtmlForm;
+import javax.faces.component.html.HtmlInputText;
+import javax.faces.component.html.HtmlInputSecret;
+import javax.faces.component.html.HtmlOutputText;
+import com.ibm.jsf.web.data.MemberData;
+import com.ibm.faces.component.html.HtmlCommandExButton;
+
+/**
+ * @author 083253T
+ *
+ */
+public class UserLogin extends PageCodeBase {
+
+	protected HtmlScriptCollector scriptCollector1;
+	protected HtmlForm form1;
+	protected HtmlInputText textEmail1;
+	protected HtmlInputSecret secret1;
+	protected HtmlOutputText textErrorMessage1;
+	protected MemberData memberData;
+	protected HtmlCommandExButton button1;
+	
+	
+
+	/** 
+	 * @managed-bean true
+	 */
+	protected MemberData getMemberData() {
+		if (memberData == null) {
+			memberData = (MemberData) getFacesContext().getApplication()
+					.createValueBinding("#{memberData}").getValue(
+							getFacesContext());
+		}
+		return memberData;
+	}
+
+	/** 
+	 * @managed-bean true
+	 */
+	protected void setMemberData(MemberData memberData) {
+		this.memberData = memberData;
+	}
+
+
+	protected HtmlScriptCollector getScriptCollector1() {
+		if (scriptCollector1 == null) {
+			scriptCollector1 = (HtmlScriptCollector) findComponentInRoot("scriptCollector1");
+		}
+		return scriptCollector1;
+	}
+
+	protected HtmlForm getForm1() {
+		if (form1 == null) {
+			form1 = (HtmlForm) findComponentInRoot("form1");
+		}
+		return form1;
+	}
+
+	protected HtmlInputText getTextEmail1() {
+		if (textEmail1 == null) {
+			textEmail1 = (HtmlInputText) findComponentInRoot("textEmail1");
+		}
+		return textEmail1;
+	}
+
+	protected HtmlInputSecret getSecret1() {
+		if (secret1 == null) {
+			secret1 = (HtmlInputSecret) findComponentInRoot("secret1");
+		}
+		return secret1;
+	}
+
+	protected HtmlOutputText getTextErrorMessage1() {
+		if (textErrorMessage1 == null) {
+			textErrorMessage1 = (HtmlOutputText) findComponentInRoot("textErrorMessage1");
+		}
+		return textErrorMessage1;
+	}
+
+	public String doButton1Action() {
+		log("Customer login");
+				String result = (new com.ibm.jsf.web.actions.LoginAction()).
+				execute(getMemberData());
+				if ( result.equals("success") )
+					return "success";
+				else {
+						log("Error: "+result);
+						getRequestScope().put("errorMessage", result);
+						return "error";
+					}
+				}
+
+	protected HtmlCommandExButton getButton1() {
+		if (button1 == null) {
+			button1 = (HtmlCommandExButton) findComponentInRoot("button1");
+		}
+		return button1;
+	}
+
+	public String doButton1Action1() {
+				log("Customer login");
+				String result = (new com.ibm.jsf.web.actions.LoginAction()).
+				execute(getMemberData());
+				if ( result.equals("success") )
+					return "success";
+				else {
+						log("Error: "+result);
+						getRequestScope().put("errorMessage", result);
+						return "error";
+					}
+	}
+
+
+	
+
+}
