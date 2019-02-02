@@ -1,0 +1,73 @@
+/**
+ * 
+ */
+package pagecode;
+
+import com.ibm.faces.component.html.HtmlScriptCollector;
+import javax.faces.component.html.HtmlOutputText;
+import javax.faces.component.html.HtmlForm;
+import com.ibm.faces.component.html.HtmlRequestLink;
+
+/**
+ * @author 083253T
+ *
+ */
+public class RegistrationSuccess extends PageCodeBase {
+
+	protected HtmlScriptCollector scriptCollector2;
+	protected HtmlOutputText text4;
+	protected HtmlOutputText text5;
+	protected HtmlScriptCollector scriptCollector1;
+	protected HtmlForm form123;
+	protected HtmlOutputText text123;
+	protected HtmlRequestLink link123;
+	protected HtmlScriptCollector getScriptCollector2() {
+		if (scriptCollector2 == null) {
+			scriptCollector2 = (HtmlScriptCollector) findComponentInRoot("scriptCollector2");
+		}
+		return scriptCollector2;
+	}
+
+	protected HtmlOutputText getText4() {
+		if (text4 == null) {
+			text4 = (HtmlOutputText) findComponentInRoot("text4");
+		}
+		return text4;
+	}
+
+	protected HtmlOutputText getText5() {
+		if (text5 == null) {
+			text5 = (HtmlOutputText) findComponentInRoot("text5");
+		}
+		return text5;
+	}
+
+	protected HtmlScriptCollector getScriptCollector1() {
+		if (scriptCollector1 == null) {
+			scriptCollector1 = (HtmlScriptCollector) findComponentInRoot("scriptCollector1");
+		}
+		return scriptCollector1;
+	}
+
+	protected HtmlForm getForm123() {
+		if (form123 == null) {
+			form123 = (HtmlForm) findComponentInRoot("form123");
+		}
+		return form123;
+	}
+
+	protected HtmlOutputText getText123() {
+		if (text123 == null) {
+			text123 = (HtmlOutputText) findComponentInRoot("text123");
+		}
+		return text123;
+	}
+
+	protected HtmlRequestLink getLink123() {
+		if (link123 == null) {
+			link123 = (HtmlRequestLink) findComponentInRoot("link123");
+		}
+		return link123;
+	}
+
+}
