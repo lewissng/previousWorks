@@ -1,4 +1,3 @@
 # previousWorks
-A compilation of my prior experiences.
-Consisting of Java and C# works.
+Consisting of Java and C# works from poly projects.
 Thanks for checking in.
